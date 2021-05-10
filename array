@@ -102,23 +102,6 @@ int detectMin(const string a[], int n)
 
 int moveToBack(string a[], int n, int pos)
 {
-    
-//    if (n < 0)
-//    {
-//        return -1;
-//    }
-//
-//    else if (n >= 0)
-//    {
-//        for (int i = pos; i < n - 1; i++)
-//        {
-//            string temp = a[i+1];
-//            a[i+1] = a[i];
-//            a[i] = temp;
-//        }
-//        return pos;
-//    }
-//    return -1;
     if (n <= 0){
         return -1;
     }
@@ -136,12 +119,34 @@ int moveToBack(string a[], int n, int pos)
             for(int k = pos; k < n-1; k++){
                 a[i] = a[i+1];
             }
-            a[0] = element;
+            a[n-1] = element;
             return pos;
         }
       
     }
     return -1;
+//    if (n <= 0)
+//    {
+//        return -1;
+//    }
+//
+//    if (pos < 0)
+//    {
+//        return -1;
+//    }
+//
+//    else if (n > 0)
+//    {
+//        for (int i = pos; i < n - 1; i++)
+//        {
+//            string temp = a[i+1];
+//            a[i+1] = a[i];
+//            a[i] = temp;
+//        }
+//        return pos;
+//    }
+//    return -1;
+
 }
 
 
@@ -195,7 +200,7 @@ int detectDifference(const string a1[], int n1, const string a2[], int n2)
     
     if (n2 > n1)
     {
-        for(int i = 0; i < n2; i++)
+        for(int i = 0; i < n1; i++)
         {
             if(a1[i] != a2[i])
             {
@@ -241,65 +246,183 @@ int deleteDups(string a[], int n)
     return retain;
 }
 
-//bool contains(const string a1[], int n1, const string a2[], int n2)
-//{
-//
-//}
-//int detectMin(const string a[], int n)
-//
-//int moveToBack (string a[], int n, in post)
-//
-//int moveToFront(string a[], int n, int post)
-//
-//int detectDifference(const string a1[], int n1, const string a2[], int n2)
-//
-//int deleteDups(string a[], int n)
-//
-//bool contains(const string a1[], int n1, const string a2[], int n2)
-//
-//int meld(const string a1[], int n1, const string a2[], int n2, string result[], int max)
-//
-//int split(const string a[], int n, string splitter)
+bool contains(const string a1[], int n1, const string a2[], int n2)
+{
+    if (n1 < 0 || n2 < 0)
+    {
+        return false;
+    }
+    
+    else if ( n1 >=0 || n2 >= 0)
+    {
+        int k = 0;
+        for (int i =0; i < n2; i++)
+        {
+            for(; k < n1; k++)
+            {
+                if (a2[i] == a1[k])
+                {
+                    break;
+                }
+                k++;
+                if (k > n1)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    
+    }
+    return false;
+}
+
+int meld(const string a1[],int n1, const string a2[], int n2, string result[], int max)
+{
+    
+    if (n1 < 0 || n2 < 0)
+     {
+         return -1;
+      }
+  
+    
+    for (int i = 0; i < n1-1; i++)
+    {
+        if(a1[i] > a1[i+1])
+        {
+            return -1;
+        }
+
+    }
+    
+    for (int k =0; k < n2-1; k++)
+    {
+        if(a2[k] > a2[k+1])
+        {
+            return -1;
+        }
+    }
+    
+    int i =0;
+    int j = 0;
+    int k =0;
+    
+    for(; i < n1 && j < n2;)
+    {
+        if(a1[i] > a2[j])
+        {
+            result[k] = a2[j];
+            j++;
+            k++;
+        }
+        else
+        {
+            result[k] = a1[i];
+            i++;
+            k++;
+        }
+    }
+        if(n1 == i)
+        {
+            for(;j < n2; j++, k++ )
+            {
+                result[k] = a2[j];
+        }
+        }
+        
+        else
+        {
+        for(;i < n1; i++, k++ )
+            {
+                result[k] = a1[i];
+            }
+        }
+        
+    if (k > max)
+    {
+        return -1;
+    }
+    else
+    {
+        return k;
+    }
+
+  
+}
+
+int split(string a[], int n, string splitter)
+{
+    int verdict;
+         if(n<0){
+             return -1;
+         }
+         int counter = 0;         //a variable initialised as a counter
+         for(int i = 0; i < n; i++){
+             if(a[i] > splitter){      //checks to see if there is an element greater than the separator
+                 string extra = a[i];   //stores that specific string in a storage variable
+                    for(int k=i; k<n-1; k++){       //similar to the rotateLeft function, all those strings that are greater than the separator are moved to the end on the string
+                        a[k] = a[k+1];
+                    }
+                a[n-1]=extra;
+                i--;           //iterates down to check all the elements even after reversal
+                counter++;
+                if(counter == n){
+                    if(a[i-1] > a[i]){          //This takes care of the case if we have an element equal to the separator and makes sure that this element becomes the last element before the elements > than separator come
+                        string lastCaseShift = a[i];
+                        a[i] = a[i-1];
+                        a[i-1] = lastCaseShift;
+                    }
+                    verdict = i +1;     //when the counter the reaches the size of n, we return the position of the first element > than the separator
+                    if(a[i] == splitter && a[i-1] != splitter){ //however if the element is equal to the separator we return the position of the separator
+                        verdict = i;
+                    }
+                    if(a[0] > splitter){   //if all the elements are greater than the separator then return n
+                        verdict = n;
+                    }
+                    return verdict;
+                  }
+             }
+        }
+         return n;
+}
+    //put elements in results, check if it more than max
+    // how to put element in array,
+    //
+
 
 
 
 int main()
 {
-    string h[7] = { "moana","tiana", "elsa", "ariel", "", "belle", "elsa" };
+    string h[7] = { "moana", "tiana", "elsa", "ariel", "", "belle", "elsa" };
     assert(countMatches(h, 7, "elsa") == 2);
-    assert(countMatches(h, -1, "elsa") == -1);
-    assert(countMatches(h, 7, "belle") == 1);
     assert(countMatches(h, 7, "") == 1);
     assert(countMatches(h, 7, "merida") == 0);
     assert(countMatches(h, 0, "elsa") == 0);
-   assert(detectMatch(h, 7, "elsa") == 2);
-    assert(detectMatch(h, 7, "belle") == 5);
+    assert(detectMatch(h, 7, "elsa") == 2);
     assert(detectMatch(h, 2, "elsa") == -1);
-    assert(detectMatch(h, 2, "") == -1);
     int bg;
     int en;
-    assert(detectSequence(h, 7, "moana", bg, en) && bg == 0 && en == 0);
     assert(detectSequence(h, 7, "ariel", bg, en) && bg == 3 && en == 3);
-    assert(!detectSequence(h, 7, "hi", bg, en) && bg == 3 && en == 3);
 
     string g[4] = { "moana", "tiana", "ariel", "belle" };
     assert(detectMin(g, 4) == 2);
     assert(detectDifference(h, 4, g, 4) == 2);
- //   assert(contains(h, 7, g, 4));
+    assert(contains(h, 7, g, 4));
     assert(moveToBack(g, 4, 1) == 1 && g[1] == "ariel" && g[3] == "tiana");
 
- string f[4] = { "belle", "ariel", "tiana", "elsa" };
-  assert(moveToFront(f, 4, 2) == 2 && f[0] == "tiana" && f[2] == "ariel");
-//  assert(moveToFront(f, 4, 3) == 2 && f[0] == "elsa" && f[2] == "ariel");
-  string e[5] = { "belle", "belle", "belle", "tiana", "tiana" };
-  assert(deleteDups(e, 5) == 2 && e[1] == "tiana");
+    string f[4] = { "belle", "ariel", "tiana", "elsa" };
+    assert(moveToFront(f, 4, 2) == 2 && f[0] == "tiana" && f[2] == "ariel");
 
-//    string x[4] = { "elsa", "elsa", "raya", "tiana" };
-//    string y[4] = { "ariel", "belle", "elsa", "merida" };
-//    string z[10];
-//    assert(meld(x, 4, y, 4, z, 10) == 8 && z[5] == "merida");
-//
-//    assert(split(h, 7, "elsa") == 3);
+    string e[5] = { "belle", "belle", "belle", "tiana", "tiana" };
+    assert(deleteDups(e, 5) == 2 && e[1] == "tiana");
+
+    string x[4] = { "elsa", "elsa", "raya", "tiana" };
+    string y[4] = { "ariel", "belle", "elsa", "merida" };
+    string z[10];
+    assert(meld(x, 4, y, 4, z, 10) == 8 && z[5] == "merida");
+
+    assert(split(h, 7, "elsa") == 3);
 
     cout << "All tests succeeded" << endl;
 }
